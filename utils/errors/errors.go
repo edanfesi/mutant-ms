@@ -20,5 +20,26 @@ func HandlerError(err error) (int, errorResponse) {
 		Code:    http.StatusBadRequest,
 	}
 
+	if checkStatusForbidden(err) {
+		response.Code = http.StatusForbidden
+		return response.Code, response
+	}
+
 	return response.Code, response
+}
+
+func checkStatusForbidden(err error) bool {
+	listForbidden := map[string]struct{}{
+		"forbidden": {},
+	}
+
+	return check(err.Error(), listForbidden)
+}
+
+func check(err string, mapErrors map[string]struct{}) bool {
+	if _, ok := mapErrors[err]; ok {
+		return ok
+	}
+
+	return false
 }

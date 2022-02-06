@@ -54,11 +54,11 @@ func (mutantController mutants) IsMutant(c echo.Context) error {
 		return c.JSON(mutantError.HandlerError(err))
 	}
 
-	result := mutantController.services.IsMutant(ctx, dnaSequence.Dna)
-
-	response := mutantModel.IsMutantResponse{
-		IsMutant: result,
+	err = mutantController.services.IsMutant(ctx, dnaSequence.Dna)
+	if err != nil {
+		log.Errorf("[is_mutant][err:%s]", err.Error())
+		return c.JSON(mutantError.HandlerError(err))
 	}
 
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusOK, nil)
 }

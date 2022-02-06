@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsMutant_ReturnTrue(t *testing.T) {
+func TestIsMutant_IsMutant(t *testing.T) {
 	ctx := mutantContext.SetLogger(context.Background(), logger.New("-"))
 
 	dna := []string{
@@ -24,12 +24,12 @@ func TestIsMutant_ReturnTrue(t *testing.T) {
 
 	service := &MutantsServices{}
 
-	result := service.IsMutant(ctx, dna)
+	err := service.IsMutant(ctx, dna)
 
-	assert.Equal(t, true, result)
+	assert.NoError(t, err)
 }
 
-func TestIsMutant_ReturnFalse(t *testing.T) {
+func TestIsMutant_IsNotMutant(t *testing.T) {
 	ctx := mutantContext.SetLogger(context.Background(), logger.New("-"))
 
 	dna := []string{
@@ -43,9 +43,9 @@ func TestIsMutant_ReturnFalse(t *testing.T) {
 
 	service := &MutantsServices{}
 
-	result := service.IsMutant(ctx, dna)
+	err := service.IsMutant(ctx, dna)
 
-	assert.Equal(t, false, result)
+	assert.Error(t, err)
 }
 
 func TestValidateDna_OK(t *testing.T) {

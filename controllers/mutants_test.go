@@ -3,6 +3,7 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"mutant-ms/services/mutants/mocks"
 	testUtils "mutant-ms/utils/tests"
@@ -84,7 +85,7 @@ func TestIsMutant_OK(t *testing.T) {
 
 	mutantServiceMock := new(mocks.Services)
 	mutantServiceMock.On("ValidateDna", mock.Anything, payload.Dna).Return(nil)
-	mutantServiceMock.On("IsMutant", mock.Anything, payload.Dna).Return(true)
+	mutantServiceMock.On("IsMutant", mock.Anything, payload.Dna).Return(nil)
 
 	_, _, rec, c := testUtils.SetupServerTest(http.MethodPost, uri, bytes.NewReader(payloadByte))
 
@@ -92,10 +93,34 @@ func TestIsMutant_OK(t *testing.T) {
 	mutantController.services = mutantServiceMock
 	mutantController.IsMutant(c)
 
-	var response mutantModel.IsMutantResponse
-	err = json.Unmarshal(rec.Body.Bytes(), &response)
+	assert.Equal(t, http.StatusOK, rec.Code)
+}
+
+func TestIsMutant_Forbidden(t *testing.T) {
+	uri := "/mutant"
+
+	payload := mutantModel.DnaSequence{
+		Dna: []string{
+			"ATGCGA",
+			"CAGTGC",
+			"TTATGT",
+			"AGAAGG",
+			"CCCCTA",
+			"TCACTG",
+		},
+	}
+	payloadByte, err := json.Marshal(payload)
 	assert.NoError(t, err)
 
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.Equal(t, true, response.IsMutant)
+	mutantServiceMock := new(mocks.Services)
+	mutantServiceMock.On("ValidateDna", mock.Anything, payload.Dna).Return(nil)
+	mutantServiceMock.On("IsMutant", mock.Anything, payload.Dna).Return(errors.New("forbidden"))
+
+	_, _, rec, c := testUtils.SetupServerTest(http.MethodPost, uri, bytes.NewReader(payloadByte))
+
+	mutantController := NewMutantController()
+	mutantController.services = mutantServiceMock
+	mutantController.IsMutant(c)
+
+	assert.Equal(t, http.StatusForbidden, rec.Code)
 }

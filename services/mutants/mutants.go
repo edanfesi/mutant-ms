@@ -8,7 +8,7 @@ import (
 
 type MutantsServices struct{}
 
-func (mutantsServices *MutantsServices) IsMutant(ctx context.Context, dna []string) bool {
+func (mutantsServices *MutantsServices) IsMutant(ctx context.Context, dna []string) error {
 	dnaLen := len(dna)
 
 	visitedBases := make([][]int, dnaLen)
@@ -49,12 +49,12 @@ func (mutantsServices *MutantsServices) IsMutant(ctx context.Context, dna []stri
 			visitedBases[i][j] = 1
 
 			if mutantDNA > 1 {
-				return true
+				return nil
 			}
 		}
 	}
 
-	return false
+	return fmt.Errorf("forbidden")
 }
 
 func (mutantsservices *MutantsServices) ValidateDna(ctx context.Context, dna []string) error {
