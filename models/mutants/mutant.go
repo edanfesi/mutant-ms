@@ -1,4 +1,4 @@
-package mutant
+package mutants
 
 type DnaSequence struct {
 	Dna []string `json:"dna"`

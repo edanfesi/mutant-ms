@@ -1,4 +1,4 @@
-package mutant
+package mutants
 
 import (
 	"context"
@@ -6,9 +6,9 @@ import (
 	"regexp"
 )
 
-type MutantServices struct{}
+type MutantsServices struct{}
 
-func (mutantServices *MutantServices) IsMutant(ctx context.Context, dna []string) (bool, error) {
+func (mutantsServices *MutantsServices) IsMutant(ctx context.Context, dna []string) bool {
 	dnaLen := len(dna)
 
 	visitedBases := make([][]int, dnaLen)
@@ -49,15 +49,15 @@ func (mutantServices *MutantServices) IsMutant(ctx context.Context, dna []string
 			visitedBases[i][j] = 1
 
 			if mutantDNA > 1 {
-				return true, nil
+				return true
 			}
 		}
 	}
 
-	return false, nil
+	return false
 }
 
-func (mutantservices *MutantServices) ValidateDna(ctx context.Context, dna []string) error {
+func (mutantsservices *MutantsServices) ValidateDna(ctx context.Context, dna []string) error {
 	dnaLen := len(dna)
 
 	r, _ := regexp.Compile(fmt.Sprintf("[A,T,C,G]{%d}", dnaLen))

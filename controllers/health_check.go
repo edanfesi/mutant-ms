@@ -17,7 +17,7 @@ type healthCheck struct {
 	ProjectVersion string
 }
 
-func NewHealthCheck() *healthCheck {
+func NewHealthCheckController() *healthCheck {
 	return &healthCheck{
 		BasePath:       "health-check",
 		ProjectName:    constants.Commons.ProjectName,
@@ -30,7 +30,7 @@ func (cHealthCheck healthCheck) GetHealthCheck(ctx echo.Context) error {
 		http.StatusOK,
 		mHealthCheck.Response{
 			Name:    cHealthCheck.ProjectName,
-			Version: "1.0.0",
+			Version: settings.Commons.ProjectVersion,
 			Date:    time.Now().UTC(),
 		},
 	)

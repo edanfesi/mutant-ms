@@ -7,28 +7,28 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"mutant-ms/constants"
-	mutantModel "mutant-ms/models/mutant"
-	mutantService "mutant-ms/services/mutant"
+	mutantModel "mutant-ms/models/mutants"
+	mutantsService "mutant-ms/services/mutants"
 	"mutant-ms/settings"
 	mutantContext "mutant-ms/utils/context"
 	mutantError "mutant-ms/utils/errors"
 )
 
-type mutant struct {
+type mutants struct {
 	BasePath       string
 	ProjectName    string
 	ProjectVersion string
-	services       mutantService.Services
+	services       mutantsService.Services
 }
 
-var mService mutantService.Services
+var mService mutantsService.Services
 
-func NewMutants(services mutantService.Services) {
+func NewMutants(services mutantsService.Services) {
 	mService = services
 }
 
-func NewMutantController() *mutant {
-	return &mutant{
+func NewMutantController() *mutants {
+	return &mutants{
 		BasePath:       "mutant",
 		ProjectName:    constants.Commons.ProjectName,
 		ProjectVersion: settings.Commons.ProjectVersion,
@@ -36,7 +36,7 @@ func NewMutantController() *mutant {
 	}
 }
 
-func (mutantController mutant) IsMutant(c echo.Context) error {
+func (mutantController mutants) IsMutant(c echo.Context) error {
 	ctx, cancel := mutantContext.GeContextWithTimeout(c, 5*time.Minute)
 	log := mutantContext.GetLogger(ctx)
 
@@ -54,11 +54,7 @@ func (mutantController mutant) IsMutant(c echo.Context) error {
 		return c.JSON(mutantError.HandlerError(err))
 	}
 
-	result, err := mutantController.services.IsMutant(ctx, dnaSequence.Dna)
-	if err != nil {
-		log.Errorf("[is_mutant][err:%s]", err.Error())
-		return c.JSON(mutantError.HandlerError(err))
-	}
+	result := mutantController.services.IsMutant(ctx, dnaSequence.Dna)
 
 	response := mutantModel.IsMutantResponse{
 		IsMutant: result,

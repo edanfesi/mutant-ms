@@ -11,7 +11,7 @@ func Setup(baseRoute *echo.Group) {
 
 	configurations.SetLayers()
 
-	healthCheckController := controllers.NewHealthCheck()
+	healthCheckController := controllers.NewHealthCheckController()
 	baseRoute.GET(healthCheckController.BasePath, healthCheckController.GetHealthCheck)
 
 	mutantController := controllers.NewMutantController()

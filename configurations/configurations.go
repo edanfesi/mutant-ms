@@ -2,14 +2,14 @@ package configurations
 
 import (
 	"mutant-ms/controllers"
-	sMutants "mutant-ms/services/mutant"
+	sMutants "mutant-ms/services/mutants"
 )
 
 func SetLayers() {
 
 	// Services
-	mutantService := &sMutants.MutantServices{}
+	mutantsService := &sMutants.MutantsServices{}
 
 	// Controllers
-	controllers.NewMutants(mutantService)
+	controllers.NewMutants(mutantsService)
 }

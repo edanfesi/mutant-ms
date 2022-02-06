@@ -35,6 +35,10 @@ func GetLogger(ctx context.Context) *logrus.Entry {
 	return log
 }
 
+func SetLogger(ctx context.Context, logger *logrus.Entry) context.Context {
+	return context.WithValue(ctx, loggerKey, logger)
+}
+
 func GetEchoContextLogger(ctx echo.Context) *logrus.Entry {
 	log, ok := ctx.Get(echoLogger).(*logrus.Entry)
 	if !ok {
