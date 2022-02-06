@@ -1,0 +1,12 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/mutant-ms/health-check",
+    "name": "mutant-ms/controllers.healthCheck.GetHealthCheck-fm"
+  },
+  {
+    "method": "POST",
+    "path": "/api/mutant-ms/mutant",
+    "name": "mutant-ms/controllers.mutant.IsMutant-fm"
+  }
+]
