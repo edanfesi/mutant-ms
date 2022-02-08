@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	testUtils "mutant-ms/utils/tests"
-
 	"github.com/stretchr/testify/assert"
+
+	testUtils "mutant-ms/utils/tests"
 )
 
 func TestHealthCheck_OK(t *testing.T) {

@@ -2,14 +2,19 @@ package configurations
 
 import (
 	"mutant-ms/controllers"
-	sMutants "mutant-ms/services/mutants"
+	mutantRepo "mutant-ms/repositories/mutants"
+	mutantService "mutant-ms/services/mutants"
+	"mutant-ms/storage"
 )
 
-func SetLayers() {
+func SetLayers(postgres storage.PostgresDrivers) {
+
+	// Repositories
+	mutantReposPostgres := mutantRepo.NewMutantsRepositories(postgres)
 
 	// Services
-	mutantsService := &sMutants.MutantsServices{}
+	mutantsService := mutantService.NewMutantService(mutantReposPostgres)
 
 	// Controllers
-	controllers.NewMutants(mutantsService)
+	controllers.NewMutantController(mutantsService)
 }

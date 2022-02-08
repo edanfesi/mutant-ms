@@ -15,24 +15,20 @@ import (
 )
 
 type mutants struct {
-	BasePath       string
-	ProjectName    string
-	ProjectVersion string
-	services       mutantsService.Services
+	MutantPath      string
+	MutantStatsPath string
+	ProjectName     string
+	ProjectVersion  string
+	services        mutantsService.Services
 }
 
-var mService mutantsService.Services
-
-func NewMutants(services mutantsService.Services) {
-	mService = services
-}
-
-func NewMutantController() *mutants {
+func NewMutantController(mService mutantsService.Services) *mutants {
 	return &mutants{
-		BasePath:       "mutant",
-		ProjectName:    constants.Commons.ProjectName,
-		ProjectVersion: settings.Commons.ProjectVersion,
-		services:       mService,
+		MutantPath:      "mutant",
+		MutantStatsPath: "stats",
+		ProjectName:     constants.Commons.ProjectName,
+		ProjectVersion:  settings.Commons.ProjectVersion,
+		services:        mService,
 	}
 }
 
@@ -61,4 +57,19 @@ func (mutantController mutants) IsMutant(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, nil)
+}
+
+func (mutantController mutants) GetStats(c echo.Context) error {
+	ctx, cancel := mutantContext.GeContextWithTimeout(c, 5*time.Minute)
+	log := mutantContext.GetLogger(ctx)
+
+	defer cancel()
+
+	stats, err := mutantController.services.GetStats(ctx)
+	if err != nil {
+		log.Errorf("[is_mutant][err:%s]", err.Error())
+		return c.JSON(mutantError.HandlerError(err))
+	}
+
+	return c.JSON(http.StatusOK, stats)
 }

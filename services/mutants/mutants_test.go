@@ -2,12 +2,16 @@ package mutants
 
 import (
 	"context"
+	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
+	"mutant-ms/models/mutants"
+	"mutant-ms/repositories/mutants/mocks"
 	mutantContext "mutant-ms/utils/context"
 	"mutant-ms/utils/logger"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestIsMutant_IsMutant(t *testing.T) {
@@ -22,7 +26,20 @@ func TestIsMutant_IsMutant(t *testing.T) {
 		"TCACTG",
 	}
 
-	service := &MutantsServices{}
+	dnaString := strings.Join(dna, ", ")
+
+	toSave := mutants.MutantDna{
+		ID:       0,
+		Dna:      dnaString,
+		IsMutant: true,
+	}
+
+	mutantRepoMock := new(mocks.Repositories)
+	mutantRepoMock.On("Save", mock.Anything, toSave).Return(nil)
+
+	service := &MutantsServices{
+		repositories: mutantRepoMock,
+	}
 
 	err := service.IsMutant(ctx, dna)
 
@@ -41,7 +58,20 @@ func TestIsMutant_IsNotMutant(t *testing.T) {
 		"TCACTG",
 	}
 
-	service := &MutantsServices{}
+	dnaString := strings.Join(dna, ", ")
+
+	toSave := mutants.MutantDna{
+		ID:       0,
+		Dna:      dnaString,
+		IsMutant: false,
+	}
+
+	mutantRepoMock := new(mocks.Repositories)
+	mutantRepoMock.On("Save", mock.Anything, toSave).Return(nil)
+
+	service := &MutantsServices{
+		repositories: mutantRepoMock,
+	}
 
 	err := service.IsMutant(ctx, dna)
 
@@ -60,7 +90,11 @@ func TestValidateDna_OK(t *testing.T) {
 		"TCACTG",
 	}
 
-	service := &MutantsServices{}
+	mutantRepoMock := new(mocks.Repositories)
+
+	service := &MutantsServices{
+		repositories: mutantRepoMock,
+	}
 
 	result := service.ValidateDna(ctx, dna)
 
@@ -79,7 +113,11 @@ func TestValidateDna_ReturnError(t *testing.T) {
 		"TCACTG",
 	}
 
-	service := &MutantsServices{}
+	mutantRepoMock := new(mocks.Repositories)
+
+	service := &MutantsServices{
+		repositories: mutantRepoMock,
+	}
 
 	result := service.ValidateDna(ctx, dna)
 

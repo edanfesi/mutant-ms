@@ -1,0 +1,9 @@
+CREATE TABLE mutant_dna (
+    id SERIAL NOT NULL,
+    dna TEXT NOT NULL,
+    is_mutant BOOLEAN NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE(dna)
+)
