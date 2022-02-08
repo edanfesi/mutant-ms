@@ -12,17 +12,17 @@ import (
 	uPostgres "mutant-ms/utils/postgres"
 )
 
-type MutantsPostgres struct {
+type MutantsRepositories struct {
 	db storage.PostgresDrivers
 }
 
-func NewMutantsPostgres(db storage.PostgresDrivers) *MutantsPostgres {
-	return &MutantsPostgres{
+func NewMutantsRepositories(db storage.PostgresDrivers) *MutantsRepositories {
+	return &MutantsRepositories{
 		db: db,
 	}
 }
 
-func (mRepositories *MutantsPostgres) Save(ctx context.Context, mutantDna mutantModel.MutantDna) error {
+func (mRepositories *MutantsRepositories) Save(ctx context.Context, mutantDna mutantModel.MutantDna) error {
 	_, err := mRepositories.db.ExecContext(ctx, builders.SaveDna(mutantDna))
 	fmt.Println(err)
 	if err != nil {
@@ -32,7 +32,7 @@ func (mRepositories *MutantsPostgres) Save(ctx context.Context, mutantDna mutant
 	return nil
 }
 
-func (mRepositories *MutantsPostgres) GetAll(ctx context.Context) ([]mutantModel.MutantDna, error) {
+func (mRepositories *MutantsRepositories) GetAll(ctx context.Context) ([]mutantModel.MutantDna, error) {
 	rows, err := mRepositories.db.QueryContext(ctx, builders.GetDNAs())
 	if err != nil {
 		return make([]mutantModel.MutantDna, 0), fmt.Errorf("[mutant_postgres][get][err:%v]", err.Error())

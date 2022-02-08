@@ -22,13 +22,7 @@ type mutants struct {
 	services        mutantsService.Services
 }
 
-var mService mutantsService.Services
-
-func NewMutants(services mutantsService.Services) {
-	mService = services
-}
-
-func NewMutantController() *mutants {
+func NewMutantController(mService mutantsService.Services) *mutants {
 	return &mutants{
 		MutantPath:      "mutant",
 		MutantStatsPath: "stats",

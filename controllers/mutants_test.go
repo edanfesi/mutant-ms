@@ -28,7 +28,7 @@ func TestIsMutant_ErrorOnBody(t *testing.T) {
 
 	_, _, rec, c := testUtils.SetupServerTest(http.MethodPost, uri, bytes.NewReader(payloadByte))
 
-	mutantController := NewMutantController()
+	mutantController := NewMutantController(mutantServiceMock)
 	mutantController.services = mutantServiceMock
 	mutantController.IsMutant(c)
 
@@ -56,7 +56,7 @@ func TestIsMutant_ErrorOnValidateDna(t *testing.T) {
 
 	_, _, rec, c := testUtils.SetupServerTest(http.MethodPost, uri, bytes.NewReader(payloadByte))
 
-	mutantController := NewMutantController()
+	mutantController := NewMutantController(mutantServiceMock)
 	mutantController.services = mutantServiceMock
 	mutantController.IsMutant(c)
 
@@ -89,7 +89,7 @@ func TestIsMutant_OK(t *testing.T) {
 
 	_, _, rec, c := testUtils.SetupServerTest(http.MethodPost, uri, bytes.NewReader(payloadByte))
 
-	mutantController := NewMutantController()
+	mutantController := NewMutantController(mutantServiceMock)
 	mutantController.services = mutantServiceMock
 	mutantController.IsMutant(c)
 
@@ -118,7 +118,7 @@ func TestIsMutant_Forbidden(t *testing.T) {
 
 	_, _, rec, c := testUtils.SetupServerTest(http.MethodPost, uri, bytes.NewReader(payloadByte))
 
-	mutantController := NewMutantController()
+	mutantController := NewMutantController(mutantServiceMock)
 	mutantController.services = mutantServiceMock
 	mutantController.IsMutant(c)
 

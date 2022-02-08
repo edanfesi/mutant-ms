@@ -20,6 +20,7 @@ func TestSaveDnaOk(t *testing.T) {
 	INTO
 		mutant_dna (dna, is_mutant)
 	VALUES ('AAAAAA, BBBBBB', true)
+	ON CONFLICT DO NOTHING
 	`
 
 	query := SaveDna(mutantDna)

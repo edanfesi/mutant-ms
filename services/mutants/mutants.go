@@ -8,11 +8,17 @@ import (
 	"strings"
 
 	"mutant-ms/models/mutants"
-	mutantRepo "mutant-ms/repositories/mutants"
+	mutantsRepositories "mutant-ms/repositories/mutants"
 )
 
 type MutantsServices struct {
-	PostgresRepo *mutantRepo.MutantsPostgres
+	repositories mutantsRepositories.Repositories
+}
+
+func NewMutantService(repositories mutantsRepositories.Repositories) *MutantsServices {
+	return &MutantsServices{
+		repositories: repositories,
+	}
 }
 
 func (mutantsServices *MutantsServices) IsMutant(ctx context.Context, dna []string) error {
@@ -62,7 +68,7 @@ func (mutantsServices *MutantsServices) IsMutant(ctx context.Context, dna []stri
 
 			if mutantDNA > 1 {
 				mutantDNAToSave.IsMutant = true
-				err := mutantsServices.PostgresRepo.Save(ctx, mutantDNAToSave)
+				err := mutantsServices.repositories.Save(ctx, mutantDNAToSave)
 				if err != nil {
 					return err
 				}
@@ -72,7 +78,7 @@ func (mutantsServices *MutantsServices) IsMutant(ctx context.Context, dna []stri
 		}
 	}
 
-	err := mutantsServices.PostgresRepo.Save(ctx, mutantDNAToSave)
+	err := mutantsServices.repositories.Save(ctx, mutantDNAToSave)
 	if err != nil {
 		return err
 	}
@@ -95,7 +101,7 @@ func (mutantsservices *MutantsServices) ValidateDna(ctx context.Context, dna []s
 }
 
 func (mutantsServices *MutantsServices) GetStats(ctx context.Context) (mutants.MutantStats, error) {
-	savedDna, err := mutantsServices.PostgresRepo.GetAll(ctx)
+	savedDna, err := mutantsServices.repositories.GetAll(ctx)
 	if err != nil {
 		return mutants.MutantStats{}, err
 	}
@@ -105,10 +111,14 @@ func (mutantsServices *MutantsServices) GetStats(ctx context.Context) (mutants.M
 	countMutantDna := len(mutantsDna)
 	countHumanDna := len(savedDna)
 
+	if countHumanDna == 0 {
+		countHumanDna = 1
+	}
+
 	ratio := float32(countMutantDna) / float32(countHumanDna)
 	mutantStats := mutants.MutantStats{
 		CountMutantDna: countMutantDna,
-		CountHumanDna:  countHumanDna,
+		CountHumanDna:  len(savedDna),
 		Ratio:          float32(math.Floor(float64(ratio*100)) / 100),
 	}
 
