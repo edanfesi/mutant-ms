@@ -3,10 +3,17 @@ package mutants
 import (
 	"context"
 	"fmt"
+	"math"
 	"regexp"
+	"strings"
+
+	"mutant-ms/models/mutants"
+	mutantRepo "mutant-ms/repositories/mutants"
 )
 
-type MutantsServices struct{}
+type MutantsServices struct {
+	PostgresRepo *mutantRepo.MutantsPostgres
+}
 
 func (mutantsServices *MutantsServices) IsMutant(ctx context.Context, dna []string) error {
 	dnaLen := len(dna)
@@ -14,6 +21,11 @@ func (mutantsServices *MutantsServices) IsMutant(ctx context.Context, dna []stri
 	visitedBases := make([][]int, dnaLen)
 	for i := range visitedBases {
 		visitedBases[i] = make([]int, dnaLen)
+	}
+
+	mutantDNAToSave := mutants.MutantDna{
+		Dna:      strings.Join(dna, ", "),
+		IsMutant: false,
 	}
 
 	mutantDNA := 0
@@ -49,9 +61,20 @@ func (mutantsServices *MutantsServices) IsMutant(ctx context.Context, dna []stri
 			visitedBases[i][j] = 1
 
 			if mutantDNA > 1 {
+				mutantDNAToSave.IsMutant = true
+				err := mutantsServices.PostgresRepo.Save(ctx, mutantDNAToSave)
+				if err != nil {
+					return err
+				}
+
 				return nil
 			}
 		}
+	}
+
+	err := mutantsServices.PostgresRepo.Save(ctx, mutantDNAToSave)
+	if err != nil {
+		return err
 	}
 
 	return fmt.Errorf("forbidden")
@@ -71,6 +94,27 @@ func (mutantsservices *MutantsServices) ValidateDna(ctx context.Context, dna []s
 	return nil
 }
 
+func (mutantsServices *MutantsServices) GetStats(ctx context.Context) (mutants.MutantStats, error) {
+	savedDna, err := mutantsServices.PostgresRepo.GetAll(ctx)
+	if err != nil {
+		return mutants.MutantStats{}, err
+	}
+
+	mutantsDna := getMutantDna(savedDna)
+
+	countMutantDna := len(mutantsDna)
+	countHumanDna := len(savedDna)
+
+	ratio := float32(countMutantDna) / float32(countHumanDna)
+	mutantStats := mutants.MutantStats{
+		CountMutantDna: countMutantDna,
+		CountHumanDna:  countHumanDna,
+		Ratio:          float32(math.Floor(float64(ratio*100)) / 100),
+	}
+
+	return mutantStats, nil
+}
+
 func getLengthDNA(currentValue byte, posX int, posY int, movX int, movY int, dna []string, visited [][]int) int {
 	if currentValue != dna[posX][posY] {
 		return 0
@@ -88,4 +132,16 @@ func getLengthDNA(currentValue byte, posX int, posY int, movX int, movY int, dna
 	}
 
 	return 1 + getLengthDNA(dna[posX][posY], posX+movX, posY+movY, movX, movY, dna, visited)
+}
+
+func getMutantDna(humansDna []mutants.MutantDna) []mutants.MutantDna {
+	mutantsAdn := make([]mutants.MutantDna, 0)
+
+	for _, val := range humansDna {
+		if val.IsMutant {
+			mutantsAdn = append(mutantsAdn, val)
+		}
+	}
+
+	return mutantsAdn
 }

@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	mutantContext "mutant-ms/utils/context"
 	"mutant-ms/utils/logger"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestIsMutant_IsMutant(t *testing.T) {

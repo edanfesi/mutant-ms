@@ -5,15 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"mutant-ms/services/mutants/mocks"
-	testUtils "mutant-ms/utils/tests"
 	"net/http"
 	"testing"
 
-	mutantModel "mutant-ms/models/mutants"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	mutantModel "mutant-ms/models/mutants"
+	"mutant-ms/services/mutants/mocks"
+	testUtils "mutant-ms/utils/tests"
 )
 
 func TestIsMutant_ErrorOnBody(t *testing.T) {
