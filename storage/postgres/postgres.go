@@ -19,13 +19,12 @@ func NewPostgresStorage(settings settings.PostgresSettings) *postgres {
 	log := logger.New("-")
 
 	connectionURL := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		"postgres://%s:%s@%s:%s/%s",
 		settings.User,
 		settings.Password,
 		settings.Host,
 		settings.Port,
 		settings.DBName,
-		"disable",
 	)
 
 	db, err := sql.Open("postgres", connectionURL)

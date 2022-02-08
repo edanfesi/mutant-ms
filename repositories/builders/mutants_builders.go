@@ -12,6 +12,7 @@ func SaveDna(mutantDna mutantModel.MutantDna) string {
 	INTO
 		mutant_dna (dna, is_mutant)
 	VALUES ('%s', %v)
+	ON CONFLICT DO NOTHING
 	`
 
 	return fmt.Sprintf(query, mutantDna.Dna, mutantDna.IsMutant)
